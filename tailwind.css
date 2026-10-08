@@ -1,0 +1,725 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   1. BASE LAYER & DESIGN TOKENS
+   ========================================================================== */
+@layer base {
+  :root {
+    /* Color Palette */
+    --bg-dark: #070913;
+    --bg-gradient: radial-gradient(circle at 50% 18%, #172138 0%, #080a14 60%, #030408 100%);
+    --panel-bg: rgba(15, 23, 42, 0.78);
+    --panel-border: rgba(255, 255, 255, 0.12);
+    --panel-glow: rgba(0, 150, 230, 0.25);
+    
+    --accent-primary: #0096e6;
+    --accent-gold: #fbbf24;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+
+    /* Theme Defaults: 🌌 宇宙藍 (Doraemon Cosmic Blue) */
+    --card-theme-primary: #0096e6;
+    --card-theme-secondary: #0284c7;
+    --card-theme-glow: rgba(0, 150, 230, 0.55);
+    --card-bg-gradient: linear-gradient(135deg, #0e1e38 0%, #060b17 100%);
+    --card-frame-color: #1e3a8a;
+    --card-border-gold: linear-gradient(135deg, #fef08a 0%, #d97706 50%, #78350f 100%);
+
+    /* Typography */
+    --font-card-title: 'Cinzel', serif;
+    --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'Space Grotesk', monospace;
+    --font-stat: 'Rajdhani', sans-serif;
+
+    /* Card Geometry & Ratio (Standard TCG 63:88) */
+    --card-w: min(86vw, 365px);
+    --card-aspect: 63 / 88;
+    --card-corner-radius: 18px;
+    --card-glow-radius: 35px;
+
+    /* Parametric Fine-Tuning Controls */
+    --max-tilt-angle: 25;
+    --z-depth-scale: 1;
+    --glare-spot-size: 60%;
+    --foil-opacity: 0.85;
+
+    /* Artwork Calibration */
+    --art-scale: 1;
+    --art-offset-x: 0px;
+    --art-offset-y: 0px;
+    --art-brightness: 100%;
+    --art-contrast: 100%;
+
+    /* Dynamic 3D Coordinates */
+    --rx: 0deg;
+    --ry: 0deg;
+    --mx: 50%;
+    --my: 50%;
+    --glare-opacity: 0.75;
+    --holo-angle: 135deg;
+  }
+
+  body {
+    @apply min-h-screen text-slate-100 flex flex-col items-center relative overflow-x-hidden;
+    font-family: var(--font-sans);
+    background: var(--bg-dark);
+    background-image: var(--bg-gradient);
+  }
+}
+
+/* ==========================================================================
+   2. COMPONENTS LAYER (Tailwind @apply architecture)
+   ========================================================================== */
+@layer components {
+  /* Ambient Backdrop */
+  .ambient-bg {
+    @apply fixed inset-0 pointer-events-none z-0 overflow-hidden;
+  }
+
+  .ambient-glow {
+    @apply absolute rounded-full blur-[130px] opacity-40 transition-[background] duration-500;
+    width: 600px;
+    height: 600px;
+    animation: ambientFloat 16s infinite alternate ease-in-out;
+  }
+
+  .glow-1 {
+    @apply -top-[10%] left-[10%];
+    background: radial-gradient(circle, var(--card-theme-glow) 0%, transparent 70%);
+  }
+
+  .glow-2 {
+    @apply -bottom-[15%] right-[10%];
+    background: radial-gradient(circle, #ff3344, transparent 70%);
+    animation-delay: -8s;
+  }
+
+  .glow-3 {
+    @apply top-[35%] right-[35%] w-[400px] h-[400px] opacity-20;
+    background: radial-gradient(circle, #fbbf24, transparent 70%);
+  }
+
+  .grid-overlay {
+    @apply absolute inset-0;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 38px 38px;
+    mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 85%);
+  }
+
+  /* Header Bar */
+  header.site-header {
+    @apply relative z-10 w-full max-w-7xl px-8 pt-5 pb-2 flex justify-between items-center;
+  }
+
+  .brand-title {
+    @apply flex items-center gap-3;
+  }
+
+  .brand-badge {
+    @apply bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 text-xs font-black tracking-wider px-2.5 py-1 rounded-md uppercase shadow-lg shadow-amber-400/30;
+  }
+
+  .brand-name {
+    @apply text-xl font-black tracking-wider bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent;
+    font-family: var(--font-card-title);
+  }
+
+  .github-ready-tag {
+    @apply inline-flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-full border border-white/10 text-xs text-sky-300;
+  }
+
+  /* Responsive Main Container */
+  .app-container {
+    @apply relative z-10 w-full max-w-7xl mx-auto px-8 pt-4 pb-12 grid grid-cols-1 lg:grid-cols-[1fr_470px] gap-12 items-start min-h-[calc(100vh-90px)];
+  }
+
+  /* 3D Stage Area */
+  .stage-section {
+    @apply flex flex-col items-center justify-center relative lg:sticky lg:top-6 py-4;
+    perspective: 1200px;
+  }
+
+  .stage-pedestal {
+    @apply absolute bottom-12 rounded-full pointer-events-none;
+    width: min(75vw, 340px);
+    height: 44px;
+    background: radial-gradient(ellipse at center, var(--card-theme-glow) 0%, rgba(255, 215, 0, 0.25) 40%, transparent 75%);
+    filter: blur(14px);
+    transform: rotateX(75deg);
+    animation: pedestalPulse 4s infinite ease-in-out;
+  }
+
+  .card-scene {
+    width: var(--card-w);
+    aspect-ratio: var(--card-aspect);
+    @apply relative select-none touch-none;
+    perspective: 1200px;
+  }
+
+  .card-wrapper {
+    @apply w-full h-full relative cursor-grab rounded-[18px] transition-transform duration-100;
+    transform-style: preserve-3d;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 var(--card-glow-radius) var(--card-theme-glow);
+  }
+
+  .card-wrapper:active {
+    @apply cursor-grabbing;
+  }
+
+  .card-wrapper.is-flipped {
+    transform: rotateY(180deg) !important;
+    transition: transform 0.75s cubic-bezier(0.35, 1.2, 0.6, 1) !important;
+  }
+
+  .card-wrapper.is-idle-orbit {
+    animation: idleOrbit 8s infinite ease-in-out alternate;
+  }
+
+  /* Quick Actions Bar */
+  .stage-quick-actions {
+    @apply flex flex-wrap justify-center gap-2.5 mt-5 z-10;
+  }
+
+  .stage-btn {
+    @apply bg-slate-900/80 border border-white/15 text-slate-100 px-3.5 py-2 rounded-xl text-xs font-semibold backdrop-blur-md transition-all duration-200 flex items-center gap-1.5;
+  }
+
+  .stage-btn:hover {
+    @apply bg-slate-800 border-white/30 -translate-y-0.5;
+  }
+
+  .stage-btn.active {
+    @apply bg-sky-500/30 border-sky-400 text-sky-300 shadow-md shadow-sky-500/30;
+  }
+
+  /* Card Faces */
+  .card-face {
+    @apply absolute inset-0 w-full h-full rounded-[18px] overflow-hidden;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+  }
+
+  .card-face.front {
+    @apply bg-slate-950 p-2.5 flex flex-col border-2 border-white/15;
+  }
+
+  .card-outer-rim {
+    @apply absolute inset-0 rounded-[18px] border-[3px] border-transparent pointer-events-none z-10;
+    background: var(--card-border-gold) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  .frame-cyber .card-outer-rim {
+    background: linear-gradient(135deg, #00f0ff, #7000ff, #ff007b, #00f0ff) border-box;
+  }
+
+  .frame-dark .card-outer-rim {
+    background: linear-gradient(135deg, #475569, #1e293b, #64748b) border-box;
+  }
+
+  .card-inner-frame {
+    @apply relative w-full h-full rounded-xl border border-amber-400/50 flex flex-col justify-between px-2.5 py-2 overflow-hidden shadow-inner;
+    background: var(--card-bg-gradient);
+    transform-style: preserve-3d;
+  }
+
+  /* 3D Parallax Depth Layers */
+  .p-layer-1 { transform: translateZ(calc(12px * var(--z-depth-scale, 1))); }
+  .p-layer-2 { transform: translateZ(calc(24px * var(--z-depth-scale, 1))); }
+  .p-layer-3 { transform: translateZ(calc(36px * var(--z-depth-scale, 1))); }
+  .p-layer-holo { transform: translateZ(calc(40px * var(--z-depth-scale, 1))); }
+
+  /* Top Bar Header */
+  .card-top-bar {
+    @apply flex justify-between items-center relative z-10 mb-0.5;
+  }
+
+  .badge-tier-group {
+    @apply flex items-center gap-1.5;
+  }
+
+  .rank-badge {
+    @apply bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 text-[10px] font-black tracking-wide px-1.5 py-0.5 rounded shadow-sm outline-none;
+  }
+
+  .stage-indicator {
+    @apply text-[10px] font-extrabold text-sky-300 uppercase tracking-wide outline-none;
+  }
+
+  .card-hp-group {
+    @apply flex items-baseline gap-1;
+  }
+
+  .hp-label {
+    @apply text-[10px] font-extrabold text-red-500 tracking-wide;
+  }
+
+  .hp-value {
+    @apply text-xl font-extrabold text-white outline-none leading-none;
+    font-family: var(--font-stat);
+    text-shadow: 0 0 8px rgba(255, 70, 70, 0.8);
+  }
+
+  .type-icon {
+    @apply w-5 h-5 rounded-full border border-white flex items-center justify-center text-[10px] text-white ml-1 shadow-sm;
+    background: radial-gradient(circle at 35% 35%, var(--card-theme-primary), var(--card-theme-secondary));
+    box-shadow: 0 0 8px var(--card-theme-primary);
+  }
+
+  /* Card Name & Subtitle */
+  .card-title-row {
+    @apply flex justify-between items-baseline relative z-10 border-b border-white/15 pb-0.5 mb-1;
+  }
+
+  .card-name {
+    @apply text-lg font-black tracking-wide bg-gradient-to-b from-white to-sky-200 bg-clip-text text-transparent outline-none leading-tight;
+  }
+
+  .card-subtitle {
+    @apply text-[9px] text-sky-300 font-semibold tracking-wide outline-none;
+  }
+
+  /* Illustration Window */
+  .illustration-window {
+    @apply relative w-full h-[154px] rounded-lg border-2 border-amber-400/60 overflow-hidden flex items-center justify-center z-10 cursor-pointer mb-1 shadow-lg shadow-black/60;
+    background: radial-gradient(circle at 50% 45%, #1d3557 0%, #0d1b2a 85%);
+  }
+
+  .card-art-img {
+    @apply relative w-[92%] h-[92%] object-contain pointer-events-none transition-transform duration-150;
+    transform: translate(var(--art-offset-x, 0px), var(--art-offset-y, 0px)) scale(var(--art-scale, 1));
+    filter: brightness(var(--art-brightness, 100%)) contrast(var(--art-contrast, 100%)) drop-shadow(0 8px 18px rgba(0, 0, 0, 0.75));
+  }
+
+  .art-badge-overlay {
+    @apply absolute bottom-1 right-1.5 bg-black/70 backdrop-blur-sm border border-amber-400/50 px-1.5 py-0.5 rounded text-[8px] font-extrabold text-amber-200 tracking-wide outline-none;
+  }
+
+  /* Moves Section */
+  .card-moves-section {
+    @apply flex flex-col gap-1 relative z-10 mb-1;
+  }
+
+  .ability-block {
+    @apply bg-sky-600/10 border border-sky-400/30 rounded-md px-1.5 py-1;
+  }
+
+  .ability-header {
+    @apply flex items-center gap-1.5 mb-0.5;
+  }
+
+  .ability-tag {
+    @apply bg-red-600 text-white text-[8px] font-black tracking-wider px-1 py-0.5 rounded uppercase;
+  }
+
+  .ability-name {
+    @apply text-xs font-extrabold text-slate-100 outline-none;
+  }
+
+  .ability-desc {
+    @apply text-[9px] leading-tight text-slate-300 outline-none;
+  }
+
+  .attack-block {
+    @apply bg-slate-900/60 border border-white/10 rounded-md px-1.5 py-1;
+  }
+
+  .attack-header {
+    @apply flex items-center justify-between mb-0.5;
+  }
+
+  .attack-cost-title {
+    @apply flex items-center gap-1.5;
+  }
+
+  .energy-cost-list {
+    @apply flex gap-0.5;
+  }
+
+  .energy-ball {
+    @apply w-3 h-3 rounded-full border border-white flex items-center justify-center text-[7px] text-slate-900 font-bold;
+    background: radial-gradient(circle at 35% 35%, #fde047, #ca8a04);
+  }
+
+  .attack-name {
+    @apply text-xs font-extrabold text-white outline-none;
+  }
+
+  .attack-damage {
+    @apply text-base font-extrabold text-amber-200 outline-none leading-none;
+    font-family: var(--font-stat);
+    text-shadow: 0 0 6px rgba(234, 179, 8, 0.5);
+  }
+
+  .attack-desc {
+    @apply text-[9px] leading-tight text-slate-400 outline-none;
+  }
+
+  .ultimate-block {
+    @apply bg-gradient-to-r from-red-600/15 to-indigo-600/15 border border-rose-500/40 rounded-md px-1.5 py-1 relative overflow-hidden;
+  }
+
+  .ultimate-glow-line {
+    @apply absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-500 via-amber-400 to-sky-400;
+  }
+
+  .ultimate-damage {
+    @apply text-lg font-black text-rose-500 outline-none leading-none;
+    font-family: var(--font-stat);
+    text-shadow: 0 0 10px rgba(255, 71, 87, 0.75);
+  }
+
+  /* Combat Stats Bar */
+  .combat-stats-bar {
+    @apply grid grid-cols-3 bg-black/60 border border-white/10 rounded px-1.5 py-1 text-[9px] text-center relative z-10 mb-0.5;
+  }
+
+  .stat-item {
+    @apply flex flex-col items-center justify-center gap-0.5;
+  }
+
+  .stat-label {
+    @apply text-slate-400 text-[8px] uppercase font-bold;
+  }
+
+  .stat-val {
+    @apply font-extrabold text-slate-100 outline-none;
+  }
+
+  /* Footer */
+  .card-footer-info {
+    @apply flex justify-between items-center text-[8px] text-slate-400 relative z-10 pt-0.5;
+  }
+
+  .illus-credit {
+    @apply text-slate-400 font-semibold outline-none;
+  }
+
+  .copyright-text {
+    @apply text-slate-500 outline-none;
+  }
+
+  .card-serial {
+    @apply font-extrabold text-amber-400 text-[9px] outline-none;
+    font-family: var(--font-stat);
+  }
+
+  .rarity-stars {
+    @apply text-amber-400 text-[9px] tracking-widest outline-none;
+  }
+
+  /* Holographic Foil Overlay */
+  .holo-layer {
+    @apply absolute inset-0 pointer-events-none rounded-[18px] overflow-hidden z-20 transition-opacity duration-200;
+  }
+
+  .holo-glare {
+    @apply absolute -inset-1/2 mix-blend-overlay;
+    background: radial-gradient(
+      circle at var(--mx) var(--my),
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(255, 255, 255, 0.35) calc(var(--glare-spot-size, 60%) * 0.3),
+      rgba(255, 255, 255, 0.05) calc(var(--glare-spot-size, 60%) * 0.6),
+      transparent var(--glare-spot-size, 60%)
+    );
+    opacity: var(--glare-opacity);
+  }
+
+  /* Card Back */
+  .card-face.back {
+    @apply bg-slate-950 border-[3px] border-amber-500 p-2.5 flex items-center justify-center;
+    transform: rotateY(180deg);
+  }
+
+  .card-back-design {
+    @apply relative w-full h-full rounded-xl border-2 border-amber-400/50 flex flex-col items-center justify-center overflow-hidden shadow-inner;
+    background: radial-gradient(circle at 50% 50%, #1e3a8a 0%, #0c1a3a 45%, #050a18 100%);
+  }
+
+  .back-orb-vortex {
+    @apply absolute rounded-full opacity-35 blur-md;
+    width: 230px;
+    height: 230px;
+    background: conic-gradient(from 0deg, var(--card-theme-primary), #ffd700, #ff3344, #3b82f6, var(--card-theme-primary));
+    animation: vortexSpin 18s linear infinite;
+  }
+
+  .back-center-crest {
+    @apply relative z-10 w-28 h-28 rounded-full border-[3px] border-amber-300 flex flex-col items-center justify-center text-center shadow-2xl;
+    background: radial-gradient(circle at 35% 35%, #0284c7 0%, #0f172a 80%);
+    box-shadow: 0 0 25px rgba(2, 132, 199, 0.75), inset 0 0 15px rgba(255, 215, 0, 0.55);
+  }
+
+  .back-bell-icon {
+    @apply text-3xl filter drop-shadow-[0_0_8px_#ffcc00];
+  }
+
+  .back-brand-text {
+    @apply relative z-10 mt-4 text-base font-black tracking-widest text-center bg-gradient-to-b from-white to-amber-300 bg-clip-text text-transparent;
+    font-family: var(--font-card-title);
+  }
+
+  .back-brand-sub {
+    @apply text-[9px] font-bold tracking-widest text-sky-300 uppercase mt-1;
+  }
+
+  /* Frosted Glass Control Panel */
+  .control-panel {
+    @apply bg-slate-900/80 border border-white/10 rounded-3xl p-6 backdrop-blur-2xl shadow-2xl flex flex-col gap-5 max-h-[calc(100vh-3.5rem)] overflow-y-auto;
+  }
+
+  .panel-header {
+    @apply border-b border-white/10 pb-3;
+  }
+
+  .panel-title {
+    @apply text-lg font-bold text-white flex items-center gap-2;
+  }
+
+  .panel-subtitle {
+    @apply text-xs text-slate-400 mt-1;
+  }
+
+  .panel-tabs {
+    @apply flex bg-black/40 p-1.5 rounded-xl gap-1;
+  }
+
+  .tab-btn {
+    @apply flex-1 py-2 px-1.5 border-none bg-transparent text-slate-400 text-xs font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5 whitespace-nowrap;
+  }
+
+  .tab-btn:hover {
+    @apply text-white bg-white/5;
+  }
+
+  .tab-btn.active {
+    @apply bg-white/15 text-white shadow-md shadow-black/40;
+  }
+
+  .tab-content {
+    @apply hidden flex-col gap-4;
+  }
+
+  .tab-content.active {
+    @apply flex;
+  }
+
+  /* Form Elements */
+  .form-group {
+    @apply flex flex-col gap-1;
+  }
+
+  .form-label {
+    @apply text-xs font-bold uppercase tracking-wider text-slate-300 flex justify-between items-center;
+  }
+
+  .form-control {
+    @apply bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-white text-sm transition-all duration-200 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/25;
+  }
+
+  textarea.form-control {
+    @apply resize-y min-h-[52px];
+  }
+
+  .form-row {
+    @apply grid grid-cols-2 gap-2.5;
+  }
+
+  .option-grid {
+    @apply grid grid-cols-2 gap-2;
+  }
+
+  .option-grid.grid-3 {
+    @apply grid-cols-3;
+  }
+
+  .option-card {
+    @apply bg-white/5 border border-white/10 rounded-xl p-2.5 cursor-pointer flex items-center gap-2 transition-all duration-200;
+  }
+
+  .option-card:hover {
+    @apply bg-white/10 border-white/25;
+  }
+
+  .option-card.selected {
+    @apply bg-sky-500/20 border-sky-400 shadow-lg shadow-sky-500/20;
+  }
+
+  .option-color-dot {
+    @apply w-4 h-4 rounded-full shrink-0 shadow-sm shadow-black;
+  }
+
+  .option-title {
+    @apply text-xs font-bold text-white leading-tight;
+  }
+
+  .option-sub {
+    @apply text-[10px] text-slate-400 font-normal;
+  }
+
+  .slider-group {
+    @apply flex flex-col gap-1;
+  }
+
+  .slider-header {
+    @apply flex justify-between text-xs text-slate-400;
+  }
+
+  .range-slider {
+    @apply w-full h-1.5 rounded bg-white/15 outline-none appearance-none cursor-pointer;
+  }
+
+  .upload-container {
+    @apply flex gap-2 items-center;
+  }
+
+  .upload-file-btn {
+    @apply flex-1 relative bg-gradient-to-r from-slate-800 to-slate-900 border border-dashed border-sky-400/50 rounded-xl p-2.5 text-xs font-semibold text-sky-300 text-center cursor-pointer transition-all duration-200 flex items-center justify-center gap-1.5 hover:border-sky-400 hover:bg-sky-500/10;
+  }
+
+  .hidden-file-input {
+    @apply absolute inset-0 opacity-0 cursor-pointer;
+  }
+
+  .reset-btn {
+    @apply bg-slate-800/80 border border-white/15 text-slate-300 py-2.5 px-3 rounded-xl text-xs cursor-pointer transition-all duration-200 flex items-center gap-1.5 hover:bg-slate-700 hover:text-white;
+  }
+
+  .export-cta-btn {
+    @apply bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 text-white font-extrabold rounded-xl py-3 px-4 text-sm flex items-center justify-center gap-2 shadow-xl shadow-blue-600/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-blue-600/50 hover:brightness-110 active:translate-y-0 cursor-pointer;
+  }
+
+  .toast-msg {
+    @apply fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-24 bg-slate-900/95 border border-sky-400 text-slate-100 py-2.5 px-5 rounded-full text-xs font-semibold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 z-50;
+  }
+
+  .toast-msg.show {
+    @apply translate-y-0 opacity-100;
+  }
+}
+
+/* ==========================================================================
+   3. UTILITIES & FOIL SHADER RULES
+   ========================================================================== */
+@layer utilities {
+  [data-foil="cosmos"] .holo-rainbow {
+    @apply absolute inset-0 mix-blend-color-dodge;
+    background: 
+      linear-gradient(
+        var(--holo-angle),
+        rgba(255, 0, 0, 0.4),
+        rgba(255, 154, 0, 0.4),
+        rgba(240, 240, 0, 0.4),
+        rgba(79, 220, 74, 0.4),
+        rgba(63, 218, 216, 0.4),
+        rgba(28, 127, 238, 0.4),
+        rgba(95, 21, 242, 0.4),
+        rgba(186, 12, 248, 0.4),
+        rgba(251, 7, 217, 0.4),
+        rgba(255, 0, 0, 0.4)
+      ),
+      radial-gradient(
+        circle at var(--mx) var(--my),
+        rgba(255, 255, 255, 0.6) 0%,
+        transparent 50%
+      );
+    background-size: 200% 200%, 100% 100%;
+    background-position: calc(var(--mx) * 0.8) calc(var(--my) * 0.8), center;
+    opacity: var(--foil-opacity);
+    filter: brightness(1.22) contrast(1.15);
+  }
+
+  [data-foil="cosmos"] .holo-sparkles {
+    @apply absolute inset-0 mix-blend-color-dodge opacity-65;
+    background-image: 
+      radial-gradient(2px 2px at 20% 30%, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 45% 70%, #fff, rgba(0,0,0,0)),
+      radial-gradient(1.5px 1.5px at 60% 20%, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 80% 65%, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 30% 90%, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 70% 85%, #fff, rgba(0,0,0,0));
+    background-size: 110px 110px;
+  }
+
+  [data-foil="rainbow"] .holo-rainbow {
+    @apply absolute inset-0 mix-blend-color-dodge;
+    background: repeating-linear-gradient(
+      var(--holo-angle),
+      rgba(255, 0, 90, 0.55) 0%,
+      rgba(255, 170, 0, 0.55) 10%,
+      rgba(255, 245, 0, 0.55) 20%,
+      rgba(0, 255, 120, 0.55) 30%,
+      rgba(0, 220, 255, 0.55) 40%,
+      rgba(130, 0, 255, 0.55) 50%,
+      rgba(255, 0, 180, 0.55) 60%,
+      rgba(255, 0, 90, 0.55) 70%
+    );
+    background-size: 300% 300%;
+    background-position: calc(var(--mx) * 1.5) calc(var(--my) * 1.5);
+    opacity: calc(var(--foil-opacity) * 1.05);
+    filter: contrast(1.35) saturate(1.5);
+  }
+
+  [data-foil="gold"] .holo-rainbow {
+    @apply absolute inset-0 mix-blend-hard-light;
+    background: 
+      radial-gradient(
+        circle at var(--mx) var(--my),
+        rgba(255, 235, 160, 0.95) 0%,
+        rgba(212, 175, 55, 0.65) 30%,
+        rgba(138, 90, 15, 0.4) 60%,
+        transparent 80%
+      ),
+      linear-gradient(
+        var(--holo-angle),
+        rgba(255, 215, 0, 0.45),
+        rgba(255, 140, 0, 0.45),
+        rgba(255, 245, 190, 0.75),
+        rgba(218, 165, 32, 0.45)
+      );
+    opacity: calc(var(--foil-opacity) * 0.95);
+    filter: brightness(1.25) contrast(1.2);
+  }
+
+  [data-foil="silver"] .holo-rainbow {
+    @apply absolute inset-0 mix-blend-color-dodge;
+    background: 
+      linear-gradient(
+        var(--holo-angle),
+        rgba(180, 220, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.85) 25%,
+        rgba(200, 240, 255, 0.25) 50%,
+        rgba(255, 200, 250, 0.4) 75%,
+        rgba(255, 255, 255, 0.85) 100%
+      );
+    opacity: calc(var(--foil-opacity) * 0.92);
+    filter: contrast(1.4) brightness(1.1);
+  }
+
+  @keyframes ambientFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(50px, 30px) scale(1.12); }
+    100% { transform: translate(-30px, 60px) scale(0.95); }
+  }
+
+  @keyframes pedestalPulse {
+    0%, 100% { opacity: 0.6; transform: rotateX(75deg) scale(1); }
+    50% { opacity: 0.95; transform: rotateX(75deg) scale(1.18); }
+  }
+
+  @keyframes idleOrbit {
+    0% { transform: rotateY(-14deg) rotateX(7deg); }
+    50% { transform: rotateY(14deg) rotateX(-7deg); }
+    100% { transform: rotateY(-12deg) rotateX(10deg); }
+  }
+
+  @keyframes vortexSpin {
+    to { transform: rotate(360deg); }
+  }
+}

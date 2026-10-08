@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>哆啦A夢 | 3D 鐳射全息傳奇卡牌</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@400;500;600;700;800;900&family=Rajdhani:wght@600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  
+  <!-- FontAwesome 6 Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- html2canvas CDN for High-Res PNG Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+  <!-- Ambient Dynamic Glow Backdrop -->
+  <div class="ambient-bg">
+    <div class="ambient-glow glow-1" id="bgGlowOrb"></div>
+    <div class="ambient-glow glow-2"></div>
+    <div class="ambient-glow glow-3"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <!-- Header Bar -->
+  <header class="site-header">
+    <div class="brand-title">
+      <span class="brand-badge"><i class="fa-solid fa-crown"></i> 傳奇卡牌工坊</span>
+      <h1 class="brand-name">Doraemon 3D Holo Showcase</h1>
+    </div>
+    <div class="header-links">
+      <span class="github-ready-tag"><i class="fa-solid fa-circle-check"></i> GitHub Pages 零建置部署</span>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-container">
+
+    <!-- LEFT COLUMN: 3D Card Interactive Stage -->
+    <section class="stage-section" id="stage">
+      
+      <!-- Pedestal Glow -->
+      <div class="stage-pedestal" id="stagePedestal"></div>
+
+      <!-- 3D Card Scene -->
+      <div class="card-scene" id="cardScene" data-foil="cosmos">
+
+        <div class="card-wrapper" id="cardWrapper">
+
+          <!-- ================= CARD FRONT ================= -->
+          <div class="card-face front" id="cardFront">
+            
+            <div class="card-outer-rim" id="cardOuterRim"></div>
+
+            <!-- Inner Ornate Frame -->
+            <div class="card-inner-frame" id="cardInnerFrame">
+
+              <!-- Top Tier & Identity Header -->
+              <div class="card-top-bar p-layer-3">
+                <div class="badge-tier-group">
+                  <span class="rank-badge" id="cardRank" contenteditable="true" spellcheck="false" title="點擊即時編輯">ORIGIN LEGEND</span>
+                  <span class="stage-indicator" id="cardStage" contenteditable="true" spellcheck="false" title="點擊即時編輯">STAGE 2 MASTER</span>
+                </div>
+                <div class="card-hp-group">
+                  <span class="hp-label">HP</span>
+                  <span class="hp-value" id="cardHp" contenteditable="true" spellcheck="false" title="點擊即時編輯">320</span>
+                  <div class="type-icon" id="cardAttrIcon" title="核心屬性">🌌</div>
+                </div>
+              </div>
+
+              <!-- Character Name & Subtitle -->
+              <div class="card-title-row p-layer-3">
+                <h2 class="card-name" id="cardName" contenteditable="true" spellcheck="false" title="點擊即時編輯">Doraemon</h2>
+                <span class="card-subtitle" id="cardSubtitle" contenteditable="true" spellcheck="false" title="點擊即時編輯">Cat-Type Guardian Robot</span>
+              </div>
+
+              <!-- Character Artwork Window -->
+              <div class="illustration-window p-layer-2" id="artWindow" title="點擊或拖放圖片更換肖像">
+                <div class="art-bg-nebula"></div>
+                <img id="cardArtImg" class="card-art-img" src="reference/1.png" alt="Doraemon Character Portrait" onerror="this.onerror=null; this.src='doraemon.png';" />
+                <div class="art-badge-overlay" id="cardNumberOverlay" contenteditable="true" spellcheck="false" title="點擊即時編輯">NO. 093/129 ★★★ SAR</div>
+              </div>
+
+              <!-- Combat Abilities & Moves -->
+              <div class="card-moves-section p-layer-2">
+                
+                <!-- Passive Ability -->
+                <div class="ability-block">
+                  <div class="ability-header">
+                    <span class="ability-tag">ABILITY</span>
+                    <span class="ability-name" id="cardPassiveName" contenteditable="true" spellcheck="false" title="點擊即時編輯">Four-Dimensional Pocket (四次元ポケット)</span>
+                  </div>
+                  <p class="ability-desc" id="cardPassiveDesc" contenteditable="true" spellcheck="false" title="點擊即時編輯">
+                    每回合可伸入次空間口袋一次，檢索任意秘密道具卡或立即回復 50 點生命值。
+                  </p>
+                </div>
+
+                <!-- Attack 1: Air Cannon -->
+                <div class="attack-block">
+                  <div class="attack-header">
+                    <div class="attack-cost-title">
+                      <div class="energy-cost-list" id="skill1Costs">
+                        <span class="energy-ball">⚡</span>
+                        <span class="energy-ball">⚡</span>
+                      </div>
+                      <span class="attack-name" id="skill1Name" contenteditable="true" spellcheck="false" title="點擊即時編輯">Air Cannon (空氣砲)</span>
+                    </div>
+                    <span class="attack-damage" id="skill1Dmg" contenteditable="true" spellcheck="false" title="點擊即時編輯">120</span>
+                  </div>
+                  <p class="attack-desc" id="skill1Desc" contenteditable="true" spellcheck="false" title="點擊即時編輯">
+                    發射高壓壓縮音波衝擊波，擊退敵方當前出戰卡牌並抵銷其 1 顆附加能量。
+                  </p>
+                </div>
+
+                <!-- Ultimate Skill: Anywhere Door Supernova -->
+                <div class="ultimate-block">
+                  <div class="ultimate-glow-line"></div>
+                  <div class="attack-header">
+                    <div class="attack-cost-title">
+                      <div class="energy-cost-list" id="skill2Costs">
+                        <span class="energy-ball">⚡</span>
+                        <span class="energy-ball">⚡</span>
+                        <span class="energy-ball">🔮</span>
+                        <span class="energy-ball">🔮</span>
+                      </div>
+                      <span class="attack-name" id="skill2Name" style="color: #ff8b94;" contenteditable="true" spellcheck="false" title="點擊即時編輯">Anywhere Door Supernova</span>
+                    </div>
+                    <span class="ultimate-damage" id="skill2Dmg" contenteditable="true" spellcheck="false" title="點擊即時編輯">280+</span>
+                  </div>
+                  <p class="attack-desc" id="skill2Desc" contenteditable="true" spellcheck="false" title="點擊即時編輯">
+                    撕裂時空連續體次元通道。若對手生命值高於自身，追加 100 點無視防禦真實傷害。
+                  </p>
+                </div>
+
+              </div>
+
+              <!-- Weakness / Resistance / Retreat Parameters -->
+              <div class="combat-stats-bar p-layer-1">
+                <div class="stat-item">
+                  <span class="stat-label">Weakness</span>
+                  <span class="stat-val" id="cardWeakness" contenteditable="true" spellcheck="false" title="點擊即時編輯">🐭 Mouse ×2</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Resistance</span>
+                  <span class="stat-val" id="cardResistance" contenteditable="true" spellcheck="false" title="點擊即時編輯">⏳ Time -30</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Retreat</span>
+                  <span class="stat-val" id="cardRetreat" contenteditable="true" spellcheck="false" title="點擊即時編輯">⚡⚡ (2)</span>
+                </div>
+              </div>
+
+              <!-- Anti-Counterfeit Certification & Creator Credit -->
+              <div class="card-footer-info p-layer-1">
+                <div class="footer-left">
+                  <span class="illus-credit" id="cardArtist" contenteditable="true" spellcheck="false" title="點擊即時編輯">Illus. Fujiko F. Fujio & 22nd Century Lab</span>
+                  <span class="copyright-text" id="cardCopyright" contenteditable="true" spellcheck="false" title="點擊即時編輯">© 2026 Fujiko-Pro / Shogakukan / Legendary TCG</span>
+                </div>
+                <div class="footer-right">
+                  <span class="card-serial" id="cardNumber" contenteditable="true" spellcheck="false" title="點擊即時編輯">093/129</span>
+                  <span class="rarity-stars" id="cardRarity" contenteditable="true" spellcheck="false" title="點擊即時編輯">★★★ SAR</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Dynamic Holographic Foil Overlay -->
+            <div class="holo-layer p-layer-holo" id="foilOverlay">
+              <div class="holo-rainbow"></div>
+              <div class="holo-sparkles"></div>
+              <div class="holo-glare"></div>
+            </div>
+
+          </div>
+
+          <!-- ================= CARD BACK (180deg Flip) ================= -->
+          <div class="card-face back" id="cardBack">
+            <div class="card-outer-rim"></div>
+            <div class="card-back-design">
+              <div class="back-orb-vortex"></div>
+              <div class="back-center-crest">
+                <div class="back-bell-icon">🔔</div>
+              </div>
+              <h3 class="back-brand-text">LEGENDARY TCG</h3>
+              <span class="back-brand-sub">22nd Century Edition</span>
+            </div>
+
+            <!-- Foil Layer on Card Back -->
+            <div class="holo-layer p-layer-holo">
+              <div class="holo-rainbow"></div>
+              <div class="holo-sparkles"></div>
+              <div class="holo-glare"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Quick Action Controls under card -->
+      <div class="stage-quick-actions">
+        <button class="stage-btn" id="flipBtn">
+          <i class="fa-solid fa-arrows-rotate"></i> 翻轉卡牌 180°
+        </button>
+        <button class="stage-btn" id="orbitBtn">
+          <i class="fa-solid fa-satellite"></i> 自動環繞展示
+        </button>
+        <button class="stage-btn" id="gyroBtn">
+          <i class="fa-solid fa-mobile-screen-button"></i> 手機陀螺儀
+        </button>
+        <button class="stage-btn" id="resetTiltBtn">
+          <i class="fa-solid fa-crosshairs"></i> 重置視角
+        </button>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: 3-Tab Frosted Glass Control Panel -->
+    <aside class="control-panel">
+
+      <!-- Panel Header -->
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="fa-solid fa-sliders"></i> 卡牌工坊與客製化控制
+        </div>
+        <div class="panel-subtitle">哆啦A夢傳奇卡牌 · 3D 全息視差與多模態微調系統</div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <nav class="panel-tabs">
+        <button class="tab-btn active" data-tab="tab-style">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> 樣式與反光
+        </button>
+        <button class="tab-btn" data-tab="tab-params">
+          <i class="fa-solid fa-sliders"></i> 微調參數
+        </button>
+        <button class="tab-btn" data-tab="tab-content">
+          <i class="fa-solid fa-pen-to-square"></i> 卡面文字
+        </button>
+      </nav>
+
+      <!-- ================= TAB 1: STYLES & FOIL EFFECT ================= -->
+      <div class="tab-content active" id="tab-style">
+        
+        <!-- Foil Mode Picker -->
+        <div class="form-group">
+          <label class="form-label">
+            <span><i class="fa-solid fa-sparkles"></i> 動態全息箔膜 (Holo Foil)</span>
+          </label>
+          <div class="option-grid">
+            <div class="option-card selected" data-foil="cosmos">
+              <div class="option-color-dot" style="background: linear-gradient(135deg, #0096e6, #ffd700, #ff3344);"></div>
+              <div class="option-title">Cosmos Holo<br><span class="option-sub">宇宙星雲彩虹</span></div>
+            </div>
+            <div class="option-card" data-foil="rainbow">
+              <div class="option-color-dot" style="background: linear-gradient(135deg, #ec4899, #06b6d4, #10b981);"></div>
+              <div class="option-title">Rainbow Secret<br><span class="option-sub">極光全息折射</span></div>
+            </div>
+            <div class="option-card" data-foil="gold">
+              <div class="option-color-dot" style="background: linear-gradient(135deg, #ffd700, #b45309);"></div>
+              <div class="option-title">Gold Ultra<br><span class="option-sub">黑金浮雕反光</span></div>
+            </div>
+            <div class="option-card" data-foil="silver">
+              <div class="option-color-dot" style="background: linear-gradient(135deg, #f1f5f9, #94a3b8);"></div>
+              <div class="option-title">Silver Phantom<br><span class="option-sub">冷冽銀鏡折射</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Color Picker -->
+        <div class="form-group">
+          <label class="form-label">
+            <span><i class="fa-solid fa-palette"></i> 核心屬性與主題色調</span>
+          </label>
+          <div class="option-grid grid-3">
+            <div class="option-card selected" data-theme="cosmic">
+              <div class="option-color-dot" style="background: #0096e6;"></div>
+              <div class="option-title">宇宙藍<br><span class="option-sub">Cosmic Blue</span></div>
+            </div>
+            <div class="option-card" data-theme="tech">
+              <div class="option-color-dot" style="background: #f59e0b;"></div>
+              <div class="option-title">科技金<br><span class="option-sub">Tech Gold</span></div>
+            </div>
+            <div class="option-card" data-theme="spirit">
+              <div class="option-color-dot" style="background: #a855f7;"></div>
+              <div class="option-title">精神紫<br><span class="option-sub">Spirit Purple</span></div>
+            </div>
+            <div class="option-card" data-theme="speed">
+              <div class="option-color-dot" style="background: #06b6d4;"></div>
+              <div class="option-title">疾速青<br><span class="option-sub">Speed Cyan</span></div>
+            </div>
+            <div class="option-card" data-theme="flame">
+              <div class="option-color-dot" style="background: #f43f5e;"></div>
+              <div class="option-title">創發紅<br><span class="option-sub">Creative Flame</span></div>
+            </div>
+            <div class="option-card" data-theme="shadow">
+              <div class="option-color-dot" style="background: #10b981;"></div>
+              <div class="option-title">暗影綠<br><span class="option-sub">Shadow Green</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Frame Style Picker -->
+        <div class="form-group">
+          <label class="form-label">
+            <span><i class="fa-solid fa-gem"></i> 外邊框鑲嵌風格</span>
+          </label>
+          <div class="option-grid grid-3">
+            <div class="option-card selected" data-frame="gold">
+              <div class="option-title">璀璨金箔<br><span class="option-sub">Gold Foil</span></div>
+            </div>
+            <div class="option-card" data-frame="cyber">
+              <div class="option-title">賽博炫光<br><span class="option-sub">Cyber Glow</span></div>
+            </div>
+            <div class="option-card" data-frame="dark">
+              <div class="option-title">暗黑極簡<br><span class="option-sub">Dark Matte</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Portrait Image Upload -->
+        <div class="form-group">
+          <label class="form-label">
+            <span><i class="fa-solid fa-image"></i> 自訂立繪肖像</span>
+          </label>
+          <div class="upload-container">
+            <label class="upload-file-btn" title="上傳本機圖片 PNG, JPG, WEBP">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>上傳肖像圖片</span>
+              <input type="file" id="imageInput" class="hidden-file-input" accept="image/*" />
+            </label>
+            <button class="reset-btn" id="resetArtBtn" title="重設為預設立繪">
+              <i class="fa-solid fa-rotate-left"></i> 重設立繪
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= TAB 2: PARAMETRIC FINE-TUNING ================= -->
+      <div class="tab-content" id="tab-params">
+        
+        <!-- Tilt Angle -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>最大傾斜視差角度</span>
+            <span id="valTiltAngle">25°</span>
+          </div>
+          <input type="range" class="range-slider" id="paramTiltAngle" min="10" max="45" value="25" />
+        </div>
+
+        <!-- 3D Z-Depth Scale -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>3D 立體景深倍率</span>
+            <span id="valZDepth">1.0x</span>
+          </div>
+          <input type="range" class="range-slider" id="paramZDepth" min="0.5" max="2.5" step="0.1" value="1.0" />
+        </div>
+
+        <!-- Foil Intensity -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>全息箔膜反射強度</span>
+            <span id="valFoilOpacity">85%</span>
+          </div>
+          <input type="range" class="range-slider" id="paramFoilOpacity" min="20" max="100" value="85" />
+        </div>
+
+        <!-- Glare Spot Size -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>動態高光光斑半徑</span>
+            <span id="valGlareSize">60%</span>
+          </div>
+          <input type="range" class="range-slider" id="paramGlareSize" min="30" max="90" value="60" />
+        </div>
+
+        <!-- Card Glow Radius -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>卡牌外發光半徑</span>
+            <span id="valCardGlow">35px</span>
+          </div>
+          <input type="range" class="range-slider" id="paramCardGlow" min="10" max="60" value="35" />
+        </div>
+
+        <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 0.3rem 0;"></div>
+
+        <!-- Artwork Scaling & Position -->
+        <div class="form-label" style="margin-bottom: -0.2rem;">
+          <span><i class="fa-solid fa-crop-simple"></i> 立繪位置與濾鏡微調</span>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>立繪縮放比例</span>
+            <span id="valArtScale">1.0x</span>
+          </div>
+          <input type="range" class="range-slider" id="paramArtScale" min="0.7" max="1.6" step="0.05" value="1.0" />
+        </div>
+
+        <div class="form-row">
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>水平位移 X</span>
+              <span id="valArtOffsetX">0px</span>
+            </div>
+            <input type="range" class="range-slider" id="paramArtOffsetX" min="-50" max="50" value="0" />
+          </div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>垂直位移 Y</span>
+              <span id="valArtOffsetY">0px</span>
+            </div>
+            <input type="range" class="range-slider" id="paramArtOffsetY" min="-50" max="50" value="0" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>立繪亮度</span>
+              <span id="valArtBrightness">100%</span>
+            </div>
+            <input type="range" class="range-slider" id="paramArtBrightness" min="60" max="150" value="100" />
+          </div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>立繪對比度</span>
+              <span id="valArtContrast">100%</span>
+            </div>
+            <input type="range" class="range-slider" id="paramArtContrast" min="60" max="150" value="100" />
+          </div>
+        </div>
+
+        <!-- Reset Params Button -->
+        <button class="reset-btn" id="resetParamsBtn" style="justify-content: center; width: 100%; margin-top: 0.25rem;">
+          <i class="fa-solid fa-rotate-left"></i> 重置所有微調參數
+        </button>
+
+      </div>
+
+      <!-- ================= TAB 3: CARD CONTENT EDITOR ================= -->
+      <div class="tab-content" id="tab-content">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">卡牌名稱</label>
+            <input type="text" class="form-control" id="inputCardName" value="Doraemon" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">生命值 (HP)</label>
+            <input type="text" class="form-control" id="inputCardHp" value="320" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">副標題 / 身份</label>
+          <input type="text" class="form-control" id="inputCardSubtitle" value="Cat-Type Guardian Robot" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">位階標籤</label>
+            <input type="text" class="form-control" id="inputCardRank" value="ORIGIN LEGEND" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">階級指標</label>
+            <input type="text" class="form-control" id="inputCardStage" value="STAGE 2 MASTER" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">被動特性名稱</label>
+          <input type="text" class="form-control" id="inputPassiveName" value="Four-Dimensional Pocket (四次元ポケット)" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">被動特性說明</label>
+          <textarea class="form-control" id="inputPassiveDesc">每回合可伸入次空間口袋一次，檢索任意秘密道具卡或立即回復 50 點生命值。</textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">招式一名稱</label>
+            <input type="text" class="form-control" id="inputSkill1Name" value="Air Cannon (空氣砲)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">招式一威力</label>
+            <input type="text" class="form-control" id="inputSkill1Dmg" value="120" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">招式一效果說明</label>
+          <textarea class="form-control" id="inputSkill1Desc">發射高壓壓縮音波衝擊波，擊退敵方當前出戰卡牌並抵銷其 1 顆附加能量。</textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">奧義技能名稱</label>
+            <input type="text" class="form-control" id="inputSkill2Name" value="Anywhere Door Supernova" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">奧義威力</label>
+            <input type="text" class="form-control" id="inputSkill2Dmg" value="280+" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">奧義終極效果</label>
+          <textarea class="form-control" id="inputSkill2Desc">撕裂時空連續體次元通道。若對手生命值高於自身，追加 100 點無視防禦真實傷害。</textarea>
+        </div>
+
+        <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div class="form-group">
+            <label class="form-label">弱點</label>
+            <input type="text" class="form-control" id="inputWeakness" value="🐭 Mouse ×2" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">抗性</label>
+            <input type="text" class="form-control" id="inputResistance" value="⏳ Time -30" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">撤退成本</label>
+            <input type="text" class="form-control" id="inputRetreat" value="⚡⚡ (2)" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">繪師署名</label>
+            <input type="text" class="form-control" id="inputArtist" value="Illus. Fujiko F. Fujio & 22nd Century Lab" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">專屬序號</label>
+            <input type="text" class="form-control" id="inputNumber" value="093/129" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">年份與版權聲明</label>
+          <input type="text" class="form-control" id="inputCopyright" value="© 2026 Fujiko-Pro / Shogakukan / Legendary TCG" />
+        </div>
+
+      </div>
+
+      <!-- Export Action CTA Button -->
+      <div>
+        <button class="export-cta-btn" id="exportBtn" style="width: 100%;">
+          <i class="fa-solid fa-download"></i> 匯出高解析度 PNG 卡牌 (3x Retina)
+        </button>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- Interactive Toast Notification -->
+  <div class="toast-msg" id="toast">設定已更新！</div>
+
+  <!-- External Script -->
+  <script src="script.js"></script>
+</body>
+</html>
